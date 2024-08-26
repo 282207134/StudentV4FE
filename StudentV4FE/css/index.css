@@ -1,0 +1,77 @@
+/* HTML、body、#app、および .el-container の余白とパディングをリセットし、
+ページ内で余分な余白やパディングがなく、高さがビューポート全体を占有するようにします */
+html,
+body,
+#app,
+.el-container {
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
+}
+/* ヘッダーエリアのスタイル */
+.el-header {
+    background-image: linear-gradient(#7eff84, #8b95ff);
+    /* 背景色を設定 */
+    color: #333;
+    /* テキストの色を設定 */
+    text-align: left;
+    /* テキストを左揃えにする */
+    line-height: 80px;
+    /* 行の高さを80pxに設定 */
+    font-size: 32px;
+    /* フォントサイズを32pxに設定 */
+    font-weight: bold;
+    /* フォントを太字にする */
+    /* text-shadow: 5px 5px 5px #26ff00;  */
+    /* テキストシャドウ */
+}
+/* フッターエリアのスタイル */
+.el-footer {
+    background-color: #b3c0d1;
+    /* 背景色を設定 */
+    color: #333;
+    /* テキストの色を設定 */
+    text-align: center;
+    /* テキストを中央揃えにする */
+    line-height: 30px;
+    /* 行の高さを30pxに設定 */
+}
+/* サイドバーエリアのスタイル */
+.el-aside {
+    background-color: #d3dce6;
+    /* 背景色を設定 */
+    color: #333;
+    /* テキストの色を設定 */
+    text-align: center;
+    /* テキストを中央揃えにする */
+    line-height: 200px;
+    /* 行の高さを200pxに設定 */
+}
+/* ダイアログのアバターのアップロードスタイル */
+.el-dialog .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    /* 外枠のスタイル */
+}
+.el-dialog .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+    /* ホバー状態での外枠の色 */
+}
+.el-dialog .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+    /* アバターのアップロードアイコンのスタイル */
+}
+.el-dialog .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+    /* アバターのスタイル */
+}

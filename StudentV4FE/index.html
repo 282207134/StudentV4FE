@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- 文字コードの設定 -->
+    <meta charset="UTF-8" />
+    <!-- レスポンシブレイアウトのためのビューポート設定 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- IE互換性の設定 -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- ページのタイトル -->
+    <title>学生情報管理システム</title>
+    <!-- 外部スタイルシートのインポート -->
+    <link rel="stylesheet" href="./css/index.css" />
+    <!-- Element UIのスタイルのインポート -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+    <!-- VueモジュールのCDNの使用 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <!-- Element UIコンポーネントライブラリのインポート -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!-- Axiosコンポーネントライブラリのインポート -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <!-- Vueインスタンスのコンテナ -->
+    <div id="app">
+        <!-- Element UIレイアウトコンテナ -->
+        <el-container>
+            <!-- ページヘッダー -->
+            <el-header style="height: 80;">学生情報管理システム</el-header>
+            <!-- Element UIネストされたレイアウトコンテナ -->
+            <el-container>
+                <!-- サイドバー -->
+                <el-aside width="200px">
+                    <!-- Element UIメニューコンポーネント -->
+                    <el-menu default-active="2" class="el-menu-vertical-demo">
+                        <!-- メニューアイテム-クラス管理 -->
+                        <el-menu-item index="1">
+                            <i class="el-icon-menu"></i>
+                            <span slot="title">クラス管理</span>
+                        </el-menu-item>
+                        <!-- メニューアイテム-学生情報 -->
+                        <el-menu-item index="2">
+                            <i class="el-icon-user"></i>
+                            <span slot="title">学生情報</span>
+                        </el-menu-item>
+                        <!-- メニューアイテム-講師情報 -->
+                        <el-menu-item index="3">
+                            <i class="el-icon-user-solid"></i>
+                            <span slot="title">講師情報</span>
+                        </el-menu-item>
+                        <!-- メニューアイテム-授業管理 -->
+                        <el-menu-item index="4">
+                            <i class="el-icon-document"></i>
+                            <span slot="title">授業管理</span>
+                        </el-menu-item>
+                    </el-menu>
+                </el-aside>
+                <!-- メインコンテンツエリア -->
+                <el-container>
+                    <!-- パンくずリスト -->
+                    <el-main>
+                        <el-breadcrumb separator="/">
+                            <el-breadcrumb-item :to="{ path: '/' }">ホームページ</el-breadcrumb-item>
+                            <el-breadcrumb-item><a href="/">学生情報</a></el-breadcrumb-item>
+                        </el-breadcrumb>
+                        <!-- クエリおよび操作フォーム -->
+                        <el-form :inline="true" style="margin-top:30px;">
+                            <el-row>
+                                <!-- クエリ条件入力フィールド -->
+                                <el-col :span="8">
+                                    <el-form-item label="検索:">
+                                        <el-input v-model="inputStr" placeholder="キーワードを入力してください"
+                                            style="width: 420px;"></el-input>
+                                    </el-form-item>
+                                </el-col>
+                                <!-- 検索、すべて表示、追加ボタン -->
+                                <el-col :span="8" style="text-align:right;padding-right:10px;">
+                                    <el-button-group>
+                                        <el-button type="primary" icon="el-icon-search"
+                                            @click="queryStudents()">検索</el-button>
+                                        <el-button type="primary" icon="el-icon-tickets"
+                                            @click="getAllStudents()">全部示す</el-button>
+                                        <el-button type="primary" icon="el-icon-circle-plus-outline"
+                                            @click="addStudent()">追加</el-button>
+                                    </el-button-group>
+                                </el-col>
+                                <!-- Excelインポートボタン -->
+                                <el-col :span="4">
+                                    <el-upload :show-file-list="false" :http-request="uploadExcelPost">
+                                        <el-button type="primary">Excelファイルを導入する</el-button>
+                                    </el-upload>
+                                </el-col>
+                                <!-- Excelエクスポートボタン -->
+                                <el-col :span="4">
+                                    <el-button type="primary" @click="exportToExcel()">Excelファイルを導出する</el-button>
+                                </el-col>
+                            </el-row>
+                        </el-form>
+                        <!-- 学生情報テーブル -->
+                        <el-table :data="pageStudents" border style="width: 100%" size="mini"
+                            @selection-change="handleSelectionChange">
+                            <!-- 複数選択列 -->
+                            <el-table-column type="selection">
+                            </el-table-column>
+                            <!-- 番号列 -->
+                            <el-table-column type="index" label="順番" align="center" width="60">
+                            </el-table-column>
+                            <!-- 学籍番号列 -->
+                            <el-table-column prop="sno" label="学籍番号" width="80">
+                            </el-table-column>
+                            <!-- 名前列 -->
+                            <el-table-column prop="name" label="名前" width="80">
+                            </el-table-column>
+                            <!-- 性別列 -->
+                            <el-table-column prop="gender" label="性別" width="60">
+                            </el-table-column>
+                            <!-- 生年月日列 -->
+                            <el-table-column prop="birthday" label="生年月日" align="center" width="100">
+                            </el-table-column>
+                            <!-- 携帯番号列 -->
+                            <el-table-column prop="mobile" label="携帯番号" align="center" width="120">
+                            </el-table-column>
+                            <!-- メールアドレス列 -->
+                            <el-table-column prop="email" label="メールアドレス" align="center" width="220">
+                            </el-table-column>
+                            <!-- 住所列 -->
+                            <el-table-column prop="address" label="住所" align="center">
+                            </el-table-column>
+                            <!-- 操作列 -->
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <!-- 詳細ボタン -->
+                                    <el-button type="success" icon="el-icon-more" size="mini" circle
+                                        @click="viewStudent(scope.row)"></el-button>
+                                    <!-- 編集ボタン -->
+                                    <el-button type="primary" icon="el-icon-edit" size="mini" circle
+                                        @click="updateStudent(scope.row)"></el-button>
+                                    <!-- 削除ボタン -->
+                                    <el-button type="danger" icon="el-icon-delete" size="mini" circle
+                                        @click="deleteStudent(scope.row)"></el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                        <!-- ページネーション -->
+                        <el-row style="margin-top: 20px;">
+                            <!-- 一括削除ボタン -->
+                            <el-col :span="8" style="text-align: left">
+                                <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteStudents()">
+                                    一括削除</el-button>
+                            </el-col>
+                            <!-- ページネーション -->
+                            <el-col :span="16" style="text-align: right">
+                                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                                    :current-page="currentpage" :page-sizes="[5, 10, 50, 100]" :page-size="pagesize"
+                                    layout="total, sizes, prev, pager, next, jumper" :total="total">
+                                </el-pagination>
+                            </el-col>
+                        </el-row>
+                        <!-- 学生詳細ダイアログフォーム -->
+                        <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="50%"
+                            @close="closeDialogForm('studentForm')">
+                            <el-form :model="studentForm" :rules="rules" ref="studentForm" :inline="true"
+                                style="margin-left: 20px;" label-width="110px" label-position="right" size="mini">
+                                <!-- アバターアップロードコンポーネント -->
+                                <el-upload class="avatar-uploader" 
+                                    :show-file-list="false" :http-request="uploadPicturePost" :disabled="isView"  style="text-align: center;margin:20px;" >
+                                    <!-- アバタープレビュー -->
+                                    <img v-if="studentForm.image" :src="studentForm.imageUrl" class="avatar">
+                                    <!-- アップロードボタン -->
+                                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                                </el-upload>
+                                <!-- 学籍番号入力フィールド -->
+                                <el-form-item label="学籍番号:" prop="sno">
+                                    <el-input v-model="studentForm.sno" :disabled="isEdit||isView"
+                                        suffix-icon="el-icon-edit"></el-input>
+                                </el-form-item>
+                                <!-- 名前入力フィールド -->
+                                <el-form-item label="名前:" prop="name">
+                                    <el-input v-model="studentForm.name" :disabled="isView"
+                                        suffix-icon="el-icon-edit"></el->
+                                </el-form-item>
+                                <!-- 性別選択ボックス -->
+                                <el-form-item label="性別:" prop="gender">
+                                    <el-select v-model="studentForm.gender" :disabled="isView" placeholder="性別を選んでください:">
+                                        <el-input suffix-icon="el-icon-edit"></el-input>
+                                        <el-option label="男" value="男"></el-option>
+                                        <el-option label="女" value="女"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <!-- 生年月日選択ボックス -->
+                                <el-form-item label="生年月日:" prop="birthday">
+                                    <el-date-picker v-model="studentForm.birthday" Value-format="yyyy-MM-dd"
+                                        :disabled="isView" type="date" placeholder="期日を指定してください" style="width:93%">
+                                    </el-date-picker>
+                                </el-form-item>
+                                <!-- 携帯番号入力フィールド -->
+                                <el-form-item label="携帯番号:" prop="mobile">
+                                    <el-input v-model="studentForm.mobile" :disabled="isView"
+                                        suffix-icon="el-icon-edit"></el-input>
+                                </el-form-item>
+                                <!-- メールアドレス入力フィールド -->
+                                <el-form-item label="メールアドレス:" prop="email">
+                                    <el-input v-model="studentForm.email" :disabled="isView"
+                                        suffix-icon="el-icon-edit"></el-input>
+                                </el-form-item>
+                                <!-- 住所入力フィールド -->
+                                <el-form-item label="住所:" prop="address">
+                                    <el-input v-model="studentForm.address" :disabled="isView"
+                                        suffix-icon="el-icon-edit" style="width:262%"></el-input>
+                                </el-form-item>
+                            </el-form>
+                            <!-- ダイアログのフッターボタン領域 -->
+                            <span slot="footer" class="dialog-footer">
+                                <!-- 提出ボタン -->
+                                <el-button type="primary" size="mini" v-show="!isView"
+                                    @click="submitStudentForm('studentForm')">確認する</el-button>
+                                <!-- キャンセルボタン -->
+                                <el-button type="info" size="mini" @click="closeDialogForm()">キャンセル</el-button>
+                            </span>
+                        </el-dialog>
+                    </el-main>
+                    <!-- ページのフッター -->
+                    <el-footer style="height: 30px;">学生情報管理システム 劉玉により作成する 2024-1-1
+                        連絡先:liu282207134@yahoo.co.jp</el-footer>
+                </el-container>
+            </el-container>
+        </el-container>
+    </div>
+</body>
+</html>
+<!-- Vueコードのインポート -->
+<script src="js/index.js"></script>
